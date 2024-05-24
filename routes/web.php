@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\MicropostsController;
 use App\Http\Controllers\UserFollowController;
+use App\Http\Controllers\FavoritesController;
 
 Route::get('/', [MicropostsController::class, 'index']);
 
@@ -19,11 +20,17 @@ Route::middleware('auth')->group(function () {
         Route::get('followers', [UsersController::class, 'followers'])->name('users.followers');
     });
     
+    Route::prefix('microposts/{id}')->group(function() {
+        Route::post('favorite', [FavoritesController::class, 'store'])->name('user.favorite');
+        Route::delete('unfavorite', [FavoritesController::class, 'destroy'])->name('user.unfavorite');
+        Route::get('favorites', [UsersController::class, 'favorites'])->name('user.favorites');
+        // Route::get('users/{id}/favorites', [UsersController::class, 'favorites'])->name('users.favorites');
+    });
+    
     Route::resource('users', UsersController::class, ['only' => ['index', 'show']]);
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('microposts', MicropostsController::class, ['only' => ['store', 'destroy']]);
-});
 
+    Route::resource('microposts', MicropostsController::class, ['only' => ['store', 'destroy']]);
+    
+});
+    
 require __DIR__.'/auth.php';
